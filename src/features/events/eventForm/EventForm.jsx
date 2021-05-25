@@ -1,42 +1,116 @@
-import React from 'react';
-import { Button, Form, Header, Input, Segment } from 'semantic-ui-react';
+import cuid from "cuid";
+import React, { useState } from "react";
+import { Button, Form, Header, Input, Segment } from "semantic-ui-react";
 
-export default function EventForm ({setFormOpen}) {
-    return (
-        <Segment clearing>
-            <Header content='Create new event' />
-            <Form>
-                <Form.Field>
-                    <Input type='text' placeholder='Event title' />
-                </Form.Field>
+export default function EventForm({
+  setFormOpen,
+  setEvents,
+  createEvent,
+  selectedEvent,
+  updateEvent,
+}) {
+  const initialValues = selectedEvent ?? {
+    title: "",
+    category: "",
+    description: "",
+    city: "",
+    venue: "",
+    date: "",
+  };
 
-                <Form.Field>
-                    <Input type='text' placeholder='Category' />
-                </Form.Field>
+  const [values, setValues] = useState(initialValues);
 
-                <Form.Field>
-                    <Input type='text' placeholder='Description' />
-                </Form.Field>
+  function handleFormSubmit() {
+    selectedEvent
+      ? updateEvent({ ...selectedEvent, ...values })
+      : createEvent({
+          ...values,
+          id: cuid(),
+          hostedBy: "Bob",
+          attendees: [],
+          hostPhotoURL: "/assets/user.png",
+        });
+    setFormOpen(false);
+    console.log(values);
+  }
 
-                <Form.Field>
-                    <Input type='text' placeholder='City' />
-                </Form.Field>
+  function handleInputChange(e) {
+    const { name, value } = e.target;
+    setValues({ ...values, [name]: value }); // Spread function
+  }
 
-                <Form.Field>
-                    <Input type='text' placeholder='Venue' />
-                </Form.Field>
+  return (
+    <Segment clearing>
+      <Header content={selectedEvent ? "Edit the event" : "Create new event"} />
+      <Form onSubmit={handleFormSubmit}>
+        <Form.Field>
+          <Input
+            type='text'
+            placeholder='Event title'
+            name='title'
+            value={values.title}
+            onChange={(e) => handleInputChange(e)}
+          />
+        </Form.Field>
 
-                <Form.Field>
-                    <Input type='date' placeholder='Date' />
-                </Form.Field>
+        <Form.Field>
+          <Input
+            type='text'
+            placeholder='Category'
+            name='category'
+            value={values.category}
+            onChange={(e) => handleInputChange(e)}
+          />
+        </Form.Field>
 
-               <Button type='Submit' floated='right' positive content='Submit' />
-               <Button 
-                onClick={() => setFormOpen(false)} 
-                type='Submit' 
-                floated='right' 
-                content='Cancel' />
-            </Form>
-        </Segment>
-    );
+        <Form.Field>
+          <Input
+            type='text'
+            placeholder='Description'
+            name='description'
+            value={values.description}
+            onChange={(e) => handleInputChange(e)}
+          />
+        </Form.Field>
+
+        <Form.Field>
+          <Input
+            type='text'
+            placeholder='City'
+            name='city'
+            value={values.city}
+            onChange={(e) => handleInputChange(e)}
+          />
+        </Form.Field>
+
+        <Form.Field>
+          <Input
+            type='text'
+            placeholder='Venue'
+            name='venue'
+            value={values.venue}
+            onChange={(e) => handleInputChange(e)}
+          />
+        </Form.Field>
+
+        <Form.Field>
+          <Input
+            type='date'
+            placeholder='Date'
+            name='date'
+            value={values.date}
+            onChange={(e) => handleInputChange(e)}
+          />
+        </Form.Field>
+
+        <Button type='Submit' floated='right' positive content='Submit' />
+        <Button
+          onClick={() => setFormOpen(false)}
+          type='Submit'
+          floated='right'
+          content='Cancel'
+        />
+      </Form>
+    </Segment>
+  );
 }
